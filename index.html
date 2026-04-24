@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="tr" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Armür Maliyet</title>
+  <meta name="theme-color" content="#2455d4">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Armür">
+  <link rel="manifest" href="./mobile-manifest.webmanifest">
+  <link rel="icon" href="./mobile-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./mobile-icon.svg">
+  <link rel="stylesheet" href="./mobile.css">
+</head>
+<body>
+  <div class="app">
+
+    <header class="topbar">
+      <div class="title-row">
+        <h1>Armür Maliyet</h1>
+        <button type="button" class="icon-btn" id="btn-records" aria-label="Kayıtlar">📁</button>
+      </div>
+      <div class="step-row">
+        <span class="chip" id="step-chip">1/5</span>
+        <div class="progress" aria-hidden="true"><div class="progress-fill" id="progress-fill"></div></div>
+      </div>
+    </header>
+
+    <main class="wizard">
+
+      <!-- ADIM 1 -->
+      <section class="step" data-step="1">
+        <h2>Kumaş ölçüleri</h2>
+        <p class="step-desc">Kumaşın temel ölçülerini girin.</p>
+
+        <label class="field">
+          <span class="lbl">Tarak eni (cm)
+            <span class="tip" data-tip="Kumaşın ham tarak eni. Santimetre cinsinden.">ⓘ</span>
+          </span>
+          <input type="number" inputmode="decimal" step="any" min="0" id="f-tarakEn" placeholder="örn. 150">
+          <span class="err" id="e-tarakEn"></span>
+        </label>
+
+        <label class="field">
+          <span class="lbl">Çözgü sıklığı (tel/cm)
+            <span class="tip" data-tip="Santimetrede çözgü (warp) tel sayısı.">ⓘ</span>
+          </span>
+          <input type="number" inputmode="decimal" step="any" min="0" id="f-cozguSik" placeholder="örn. 40">
+          <span class="err" id="e-cozguSik"></span>
+        </label>
+
+        <label class="field">
+          <span class="lbl">Atkı sıklığı (tel/cm)
+            <span class="tip" data-tip="Santimetrede atkı (weft) tel sayısı. Sıfırdan büyük olmalı.">ⓘ</span>
+          </span>
+          <input type="number" inputmode="decimal" step="any" min="0" id="f-atkiSik" placeholder="örn. 30">
+          <span class="err" id="e-atkiSik"></span>
+        </label>
+      </section>
+
+      <!-- ADIM 2 -->
+      <section class="step" data-step="2" hidden>
+        <h2>Çözgü iplikleri</h2>
+        <p class="step-desc">En az bir çözgü ipliği girin. Farklı iplik kullanıyorsanız "+ Çözgü ipliği ekle" ile çoğaltın.</p>
+        <div id="cozgu-list" class="cards"></div>
+        <button type="button" class="add-btn" id="btn-add-cozgu">+ Çözgü ipliği ekle</button>
+      </section>
+
+      <!-- ADIM 3 -->
+      <section class="step" data-step="3" hidden>
+        <h2>Atkı iplikleri</h2>
+        <p class="step-desc">En az bir atkı ipliği girin. Farklı iplik kullanıyorsanız "+ Atkı ipliği ekle" ile çoğaltın.</p>
+        <div id="atki-list" class="cards"></div>
+        <button type="button" class="add-btn" id="btn-add-atki">+ Atkı ipliği ekle</button>
+      </section>
+
+      <!-- ADIM 4 -->
+      <section class="step" data-step="4" hidden>
+        <h2>Üretim & finisaj</h2>
+        <p class="step-desc">Tezgâh ve terbiye parametreleri.</p>
+
+        <label class="field">
+          <span class="lbl">Devir (atış/dk)
+            <span class="tip" data-tip="Tezgâh hızı, dakikadaki atkı atış sayısı.">ⓘ</span>
+          </span>
+          <input type="number" inputmode="decimal" step="any" min="0" id="f-devir" value="360">
+          <span class="err" id="e-devir"></span>
+        </label>
+
+        <label class="field">
+          <span class="lbl">Randıman (%)
+            <span class="tip" data-tip="Tezgâhın çalışma verimi yüzdesi.">ⓘ</span>
+          </span>
+          <input type="number" inputmode="decimal" step="any" min="0" max="100" id="f-randiman" value="85">
+          <span class="err" id="e-randiman"></span>
+        </label>
+
+        <label class="field">
+          <span class="lbl">Terbiye fiyatı ($/mt)
+            <span class="tip" data-tip="Boyahane/finisaj metre başı maliyeti.">ⓘ</span>
+          </span>
+          <input type="number" inputmode="decimal" step="any" min="0" id="f-terbiyeFiyat" value="0">
+          <span class="err" id="e-terbiyeFiyat"></span>
+        </label>
+
+        <label class="field">
+          <span class="lbl">Genel fire (%)
+            <span class="tip" data-tip="Tüm maliyete uygulanacak fire yüzdesi.">ⓘ</span>
+          </span>
+          <input type="number" inputmode="decimal" step="any" min="0" max="100" id="f-genelFire" value="2">
+          <span class="err" id="e-genelFire"></span>
+        </label>
+
+        <label class="field">
+          <span class="lbl">Kurşum ($/mt)
+            <span class="tip" data-tip="Çözgü hazırlık / kurşum maliyeti.">ⓘ</span>
+          </span>
+          <input type="number" inputmode="decimal" step="any" min="0" id="f-kursum" value="0">
+          <span class="err" id="e-kursum"></span>
+        </label>
+
+        <label class="field">
+          <span class="lbl">Ek malzeme ($/mt)
+            <span class="tip" data-tip="Ek ambalaj, etiket vb. metre başı maliyet.">ⓘ</span>
+          </span>
+          <input type="number" inputmode="decimal" step="any" min="0" id="f-ekMal" value="0">
+          <span class="err" id="e-ekMal"></span>
+        </label>
+
+        <label class="field">
+          <span class="lbl">Kâr ($/mt)
+            <span class="tip" data-tip="Metre başı hedeflenen kâr.">ⓘ</span>
+          </span>
+          <input type="number" inputmode="decimal" step="any" min="0" id="f-kar" value="0">
+          <span class="err" id="e-kar"></span>
+        </label>
+      </section>
+
+      <!-- ADIM 5 -->
+      <section class="step" data-step="5" hidden>
+        <h2>Sonuç</h2>
+        <div class="hero">
+          <div class="hero-lbl">TOPLAM</div>
+          <div class="hero-val" id="r-total">$0,00 /mt</div>
+        </div>
+        <dl class="breakdown">
+          <div><dt>İplik</dt><dd id="r-iplik">$0,00</dd></div>
+          <div><dt>İşçilik</dt><dd id="r-iscilik">$0,00</dd></div>
+          <div><dt>Terbiye</dt><dd id="r-terbiye">$0,00</dd></div>
+          <div><dt>Fire</dt><dd id="r-fire">$0,00</dd></div>
+          <div><dt>Kurşum + Ek + Kâr</dt><dd id="r-ek">$0,00</dd></div>
+          <div><dt>Gramaj</dt><dd id="r-grmt">0 g/mt</dd></div>
+          <div><dt>Aylık kapasite</dt><dd id="r-uay">0 mt/ay</dd></div>
+          <div class="total-row"><dt>TOPLAM</dt><dd id="r-total2">$0,00 /mt</dd></div>
+        </dl>
+        <div class="result-actions">
+          <button type="button" class="btn" id="btn-new">Yeni hesap</button>
+          <button type="button" class="btn btn-primary" id="btn-save">Kaydet</button>
+          <button type="button" class="btn" id="btn-records2">📁 Kayıtlar</button>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="actionbar" id="actionbar">
+      <button type="button" class="btn" id="btn-back">Geri</button>
+      <button type="button" class="btn btn-primary" id="btn-next" disabled>İleri</button>
+    </footer>
+
+  </div>
+
+  <!-- Kayıtlar modalı -->
+  <div class="sheet-backdrop" id="sheet-backdrop" hidden></div>
+  <div class="sheet" id="records-sheet" role="dialog" aria-labelledby="sheet-title" aria-modal="true" hidden>
+    <div class="sheet-handle" aria-hidden="true"></div>
+    <div class="sheet-head">
+      <h3 id="sheet-title">Kayıtlar</h3>
+      <button type="button" class="icon-btn" id="btn-close-sheet" aria-label="Kapat">✕</button>
+    </div>
+    <div class="sheet-body" id="records-list"></div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="./constants.js"></script>
+  <script src="./formulas-client.js"></script>
+  <script src="./mobile.js"></script>
+</body>
+</html>
